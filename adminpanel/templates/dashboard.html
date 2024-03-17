@@ -240,8 +240,27 @@
                 </div>
             </div>
             <!-- end: Table Chart -->
-            
+            <!-- Chat bot container -->
+            <div class="chat-bot-container">
+                <!-- Chat bot icon -->
+                <div class="chat-bot-icon">
+                    <i class="ri-chat-4-line"></i>
+                </div>
+                <!-- Chat bot panel -->
+                <div class="chat-bot-panel">
+                    <!-- Chat bot content goes here -->
+                    <div class="chat-content" id="chatContent">
+                        <!-- Chat messages will be displayed here -->
+                    </div>
+                    <!-- Chat input field -->
+                    <div class="chat-input">
+                        <input type="text" id="query" placeholder="Type your message here...">
+                        <button id="sendBtn">Send</button>
+                    </div>
+                </div>
+            </div>
 
+            
         </div>
     </main>
     <!-- end: Main -->
@@ -357,6 +376,44 @@
                 },
             },
         }
+    });
+
+    document.querySelector('.chat-bot-icon').addEventListener('click', function() {
+            document.querySelector('.chat-bot-panel').classList.toggle('active');
+        });
+
+
+    // Add event listener to send button
+    document.getElementById('sendBtn').addEventListener('click', function() {
+        // Get the query from the input field
+        var query = document.getElementById('query').value;
+
+        // Send an AJAX request to the server
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/send_query/', true); // Update the URL accordingly
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.onload = function() {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                // Success
+                var response = JSON.parse(xhr.responseText);
+
+                // Update the chat content with the response
+                var chatContent = document.getElementById('chatContent');
+                chatContent.innerHTML += '<div class="chat-message">' + query + '</div>';
+                chatContent.innerHTML += '<div class="chat-message">' + response.text + '</div>';
+            } else {
+                // Error
+                console.error(xhr.statusText);
+            }
+        };
+
+        xhr.onerror = function() {
+            console.error('Request failed');
+        };
+
+        // Send the request with the query data
+        xhr.send(JSON.stringify({ query: query }));
     });
     </script>
 
