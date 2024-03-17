@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Login / Registration Page</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            background: url() no-repeat;
+            background-size: cover;
+        }
+
+        .login-register-box {
+            width: 280px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #197019;
+        }
+
+        .login-register-box h1 {
+            float: left;
+            font-size: 40px;
+            border-bottom: 4px solid #197019;
+            margin-bottom: 50px;
+            padding: 13px;
+        }
+
+        .textbox {
+            width: 100%;
+            overflow: hidden;
+            font-size: 20px;
+            padding: 8px 0;
+            margin: 8px 0;
+            border-bottom: 1px solid #197019;
+        }
+
+        .fa {
+            width: px;
+            float: left;
+            text-align: center;
+        }
+
+        .textbox input {
+            border: none;
+            outline: none;
+            background: none;
+            font-size: 18px;
+            float: left;
+            margin: 0 10px;
+        }
+
+        .button {
+            width: 100%;
+            padding: 8px;
+            color: #ffffff;
+            background-color: black; /* Change button color to black */
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 12px 0;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            transition-duration: 0.4s;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .button i {
+            position: absolute;
+            left: 16px;
+            top: 8px;
+            font-size: 24px;
+        }
+
+        .button span {
+            display: block;
+            padding-left: 48px;
+        }
+
+        .button:hover {
+            background-color: #333; /* Darken color on hover */
+        }
+
+        .toggle-btn {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .toggle-btn button {
+            width: 120px;
+            height: 40px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 6px;
+            border: none;
+            background-color: transparent;
+            transition: background-color 0.3s;
+        }
+
+        .toggle-btn button:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-register-box">
+        <h1>Login / Register</h1>
+        
+        <div class="toggle-btn">
+            <button id="login-toggle">Login</button>
+            <button id="register-toggle">Register</button>
+        </div>
+
+        <form id="login-form" action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+            <div class="textbox">
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <input type="text" placeholder="Username" name="username" required>
+            </div>
+
+            <div class="textbox">
+                <i class="fa fa-lock" aria-hidden="true"></i>
+                <input type="password" placeholder="Password" name="password" required>
+            </div>
+
+            <button type="submit" class="button" name="login" id="login-btn">Sign In</button>
+        </form>
+
+        <form id="register-form" action="{% url 'register' %}" method="post" style="display: none;">
+            {% csrf_token %}
+
+            <div class="textbox">
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <input type="text" placeholder="Username" name="username" required>
+            </div>
+            
+            <div class="textbox">
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <input type="text" placeholder="First Name" name="first_name" required>
+            </div>
+
+            <div class="textbox">
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <input type="text" placeholder="Last Name" name="last_name" required>
+            </div>
+
+            <div class="textbox">
+                <i class="fa fa-envelope" aria-hidden="true"></i>
+                <input type="email" placeholder="Email" name="email" required>
+            </div>
+
+            <div class="textbox">
+                <i class="fa fa-lock" aria-hidden="true"></i>
+                <input type="password" placeholder="Password" name="password1" required>
+            </div>
+
+            <div class="textbox">
+                <i class="fa fa-lock" aria-hidden="true"></i>
+                <input type="password" placeholder="Confirm Password" name="password2" required>
+            </div>
+
+            <button type="submit" class="button" name="register" id="register-btn">Register</button>
+        </form>
+
+
+        <!-- Display success message if exists -->
+        {% if success_message %}
+            <div class="success-message">{{ success_message }}</div>
+        {% endif %}
+
+        <!-- Display error message if exists -->
+        {% if error_message %}
+            <div class="error-message">{{ error_message }}</div>
+        {% endif %}
+        
+    </div>
+
+    <!-- Add your JavaScript code here -->
+    <script>
+        const loginToggleBtn = document.getElementById('login-toggle');
+        const registerToggleBtn = document.getElementById('register-toggle');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+
+        loginToggleBtn.addEventListener('click', () => {
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+            document.getElementById("login-btn").style.display = "block";
+        });
+
+        registerToggleBtn.addEventListener('click', () => {
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+            document.getElementById("register-btn").style.display = "block";
+        });
+
+
+
+        document.getElementById("register-form").addEventListener("submit", function() {
+            document.getElementById("loader").style.display = "block";
+            document.getElementById("register-btn").style.display = "none";
+        });
+    </script>
+</body>
+
+</html>
