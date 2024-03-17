@@ -249,13 +249,21 @@
                 <!-- Chat bot panel -->
                 <div class="chat-bot-panel">
                     <!-- Chat bot content goes here -->
-                    <div class="chat-content" id="chatContent">
+                    <!-- Chat conversation container -->
+                    <div class="chat-conversation" id="chatConversation">
                         <!-- Chat messages will be displayed here -->
                     </div>
-                    <!-- Chat input field -->
+                    <!-- Chat input field and send button -->
                     <div class="chat-input">
-                        <input type="text" id="query" placeholder="Type your message here...">
-                        <button id="sendBtn">Send</button>
+                        <form id="chatForm" method="post">
+                            {% csrf_token %}
+                            <input type="text" name="query" id="query" placeholder="Type your message here...">
+                            <button type="submit" id="sendBtn">Send</button>
+                        </form>
+                    </div>
+                    <!-- Display Gemini AI response -->
+                    <div class="gemini-response" id="geminiResponse">
+                        <!-- Gemini AI response will be displayed here -->
                     </div>
                 </div>
             </div>
@@ -383,38 +391,23 @@
         });
 
 
-    // Add event listener to send button
-    document.getElementById('sendBtn').addEventListener('click', function() {
-        // Get the query from the input field
-        var query = document.getElementById('query').value;
-
-        // Send an AJAX request to the server
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', '/send_query/', true); // Update the URL accordingly
-        xhr.setRequestHeader('Content-Type', 'application/json');
-
-        xhr.onload = function() {
-            if (xhr.status >= 200 && xhr.status < 300) {
-                // Success
-                var response = JSON.parse(xhr.responseText);
-
-                // Update the chat content with the response
-                var chatContent = document.getElementById('chatContent');
-                chatContent.innerHTML += '<div class="chat-message">' + query + '</div>';
-                chatContent.innerHTML += '<div class="chat-message">' + response.text + '</div>';
-            } else {
-                // Error
-                console.error(xhr.statusText);
-            }
-        };
-
-        xhr.onerror = function() {
-            console.error('Request failed');
-        };
-
-        // Send the request with the query data
-        xhr.send(JSON.stringify({ query: query }));
-    });
+        $(document).ready(function() {
+            $('#chatForm').submit(function(e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: '/dashboard/',  // Ensure this URL matches your Django view URL
+                    data: formData,
+                    success: function(response) {
+                        $('#geminiResponse').text(response.response);
+                    },
+                    error: function(xhr, errmsg, err) {
+                        console.log(xhr.status + ": " + xhr.responseText); // Log any errors for debugging
+                    }
+                });
+            });
+        });
     </script>
 
     <!-- end: JS -->

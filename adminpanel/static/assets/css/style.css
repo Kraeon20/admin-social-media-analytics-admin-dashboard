@@ -337,7 +337,7 @@ nav {
 /* Chat bot container */
 .chat-bot-container {
     position: fixed;
-    bottom: 20px;
+    bottom: 50px;
     right: 20px;
 }
 
@@ -363,11 +363,11 @@ nav {
 /* Chat bot panel */
 .chat-bot-panel {
     position: fixed;
-    bottom: 80px;
+    bottom: 110px; /* Adjusted value */
     right: 20px;
-    width: 300px;
-    max-height: 400px;
-    overflow: hidden; /* Remove the scroll */
+    width: 400px; /* Increased width */
+    height: 600px; /* Increased height */
+    overflow-y: auto; /* Enable vertical scroll */
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -407,6 +407,9 @@ nav {
 .chat-bot-panel .chat-input button:hover {
     background-color: #0056b3;
 }
+
+
+
 
 
 
