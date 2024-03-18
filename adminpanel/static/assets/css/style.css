@@ -334,6 +334,8 @@ nav {
 /* end: Suummary */
 /* end: Main */
 
+
+
 /* Chat bot container */
 .chat-bot-container {
     position: fixed;
@@ -363,24 +365,34 @@ nav {
 /* Chat bot panel */
 .chat-bot-panel {
     position: fixed;
-    bottom: 110px; /* Adjusted value */
+    bottom: 12%;  /* Set to 0 for fixed bottom position */
     right: 20px;
-    width: 400px; /* Increased width */
-    height: 600px; /* Increased height */
-    overflow-y: auto; /* Enable vertical scroll */
+    width: 450px;
+    height: 0; /* Initially hidden */
+    overflow-y: auto;
     background-color: #fff;
-    border: 1px solid #ddd;
+    border: 1px solid transparent; /* Initially transparent border */
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    display: none;
+    transition: height 0.3s ease, border-color 0.3s ease; /* Smooth transition */
 }
 
 .chat-bot-panel.active {
-    display: block;
+    height: 600px; /* Expanded height */
+    border-color: #0056b3; /* Show border color when active */
 }
 
 /* Chat input */
+.chat-input{
+    position: absolute;
+    bottom: 0; /* Align to the bottom of the chat panel */
+    width: 100%;
+}
+
 .chat-bot-panel .chat-input {
+    position: absolute;  /* Set to absolute for bottom positioning */
+    bottom: 0;
+    width: 100%;   /* Ensure it spans the full width */
     padding: 10px;
     background-color: #f8f9fa;
     border-top: 1px solid #ddd;
@@ -394,8 +406,8 @@ nav {
     margin-right: 10px;
 }
 
-.chat-bot-panel .chat-input button {
-    background-color: #007bff;
+.chat-bot-panel .chat-input button{
+    background-color: #409e62;
     color: #fff;
     border: none;
     padding: 8px 12px;
@@ -405,12 +417,46 @@ nav {
 }
 
 .chat-bot-panel .chat-input button:hover {
-    background-color: #0056b3;
+    background-color: #0E7735;
+}
+
+/* Chat conversation */
+.chat-conversation {
+    height: calc(100% - 100px); /* Adjusted height */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column; /* Display items in reverse order */
+}
+
+.ai-responses {
+    padding: 10px;
+}
+
+.user-messages,
+.ai-responses {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Align items to the right */
 }
 
 
+.user-message {
+    align-self: flex-end; /* Align user messages to the right */
+    background-color: #dcf8c6;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 5px 5px;
+    max-width: 80%; /* Adjust the maximum width as needed */
+}
 
-
+.ai-response {
+    background-color: #b9b9b7;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 5px 5px;
+    max-width: 70%; /* Adjust the maximum width as needed */
+    align-self: flex-start; /* Align to the left */
+}
 
 
 main {
