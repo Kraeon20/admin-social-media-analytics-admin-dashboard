@@ -1,6 +1,6 @@
 import os
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from dotenv import load_dotenv
@@ -15,7 +15,8 @@ from .utils import (get_facebook_follower_count,
                     get_twitter_post_comments)
 import google.generativeai as genai
 from django.http import JsonResponse
-from django.http import HttpResponse
+from django.contrib.auth.models import User
+from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 import re
 
@@ -27,7 +28,7 @@ load_dotenv()
 # gemini_api_key = os.getenv('GEMINI_API_KEY')
 
 page_id = '238443226023972'
-access_token = 'EAAQfAQe5IP0BO4pa9D2onibUEIabgTmnSLme7opyAZCSuryYQbQKfRtRoDUt7yaxJRhZBT9dxKl5aBCXJGKcuJpJs8LEQTxRXcLDLe9q5cyjy76wIqFOU2EiAQ8ZCPKWcmuLyWE6ivr8ToaxdlHM3YjqZCgZBucOvvZBlQ91SkJDhZAT1TRZC6xaP84ZCcpy5WzQ6okELLaHvbUSVHRBPBfN9jguGRddBrLEZD'
+access_token = 'EAAQfAQe5IP0BOyu4eOtxFZAHJYZAIzyVZAaixoXLGRviegj84PZBQgmDuCDX8YN8gZAx3ZBQmwNot3DCxRFJEgSfvt0qOczdAqoLr4D320d05LWJNZCjhGpXxsoSMgm008oNhGID92rsbHZC1ziSTL7eRuJRhXZAiD36K9t2CltbHMJnyoZCbc9OImCqhrW9sYTK6nqGXlsX4slgyGWwmlCcEdKC6ZArj6CRbsZD'
 gemini_api_key = os.getenv('GEMINI_API_KEY')
 
 
@@ -153,9 +154,10 @@ def login_view(request):
             login(request, user)
             return redirect('dashboard')
         else:
-            # Handle invalid login
-            pass
+            # Invalid login attempt, add a message
+            messages.error(request, "Invalid username or password.")
     return render(request, 'login.html')
+
 
 
 
@@ -269,6 +271,59 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'login.html', {'form': form})
+
+
+
+
+# Create your views here.
+@login_required
+def settings(request):
+    # If user is admin, redirect to admin settings
+    if request.user.is_superuser:
+        return redirect('admin_settings')
+    # If user is not admin, render normal settings page
+    return render(request, 'settings.html')
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser, login_url='dashboard')
+def admin_settings(request):
+    if request.method == 'POST' and 'delete_subuser' in request.POST:
+        subuser_id = request.POST.get('subuser_id')
+        try:
+            subuser = User.objects.get(pk=subuser_id)
+            subuser.is_active = False
+            subuser.save()
+            messages.success(request, "Subuser deactivated successfully.")
+            return JsonResponse({'success': True, 'subuser_id': subuser_id})
+        except User.DoesNotExist:
+            messages.error(request, "Subuser not found.")
+            return JsonResponse({'success': False})
+    
+    subusers = User.objects.exclude(pk=request.user.pk)
+    context = {'subusers': subusers}
+    return render(request, 'admin_settings.html', context)
+
+
+def reset_password(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        new_password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if new_password != confirm_password:
+            messages.error(request, "Passwords do not match.")
+            return redirect('settings')
+
+        try:
+            user = User.objects.get(username=username)
+            user.set_password(new_password)
+            user.save()
+            messages.success(request, "Password reset successful.")
+        except User.DoesNotExist:
+            messages.error(request, "User does not exist.")
+    
+    return redirect('settings')
+
 
 
 

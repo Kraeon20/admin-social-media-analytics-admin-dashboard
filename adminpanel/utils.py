@@ -14,9 +14,9 @@ gemini_api_key = os.getenv('GEMINI_API_KEY')
 
 
 
-print(os.getenv('FACEBOOK_PAGE_ID'))
-print(os.getenv('FACEBOOK_ACCESS_TOKEN'))
-print(os.getenv('GEMINI_API_KEY'))
+# print(os.getenv('FACEBOOK_PAGE_ID'))
+# print(os.getenv('FACEBOOK_ACCESS_TOKEN'))
+# print(os.getenv('GEMINI_API_KEY'))
 
 
 def get_facebook_total_post_likes(page_id, access_token):

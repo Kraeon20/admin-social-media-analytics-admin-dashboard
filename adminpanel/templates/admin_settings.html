@@ -66,7 +66,7 @@
             <!-- start: Navbar -->
             <nav class="px-3 py-2 bg-white rounded shadow-sm mt-3">
                 <i class="ri-menu-line sidebar-toggle me-3 d-block d-md-none"></i>
-                <h5 class="fw-bold mb-0 me-auto">Settings</h5>
+                <h5 class="fw-bold mb-0 me-auto">Admin Settings</h5>
                 <div class="dropdown me-3 d-none d-sm-block">
                     <div class="cursor-pointer dropdown-toggle navbar-link" data-bs-toggle="dropdown"
                         aria-expanded="false">
@@ -102,44 +102,88 @@
                 </div>
             </nav>            
             <!-- end: Navbar -->
+                
 
-            <!-- Start: Reset Username/Password section (left column) -->
-            <div class="col-lg-6">
-                <section class="mt-4">
-                    <h3 class="fw-bold">Reset Password</h3>
-                    <form method="post" action="{% url 'reset-password' %}">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username">
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">New Password</label>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your new password">
-                        </div>
-                        <div class="mb-3">
-                            <label for="confirm_password" class="form-label">Confirm New Password</label>
-                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm your new password">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Reset Password</button>
-                    </form>
-                    <!-- Add this block to display messages -->
-                    <div id="messages-container">
-                        {% if messages %}
-                            {% for message in messages %}
-                                <div class="alert alert-{{ message.tags }}">
-                                    {{ message }}
+        </div>
+
+        <div class="container mt-3">
+            <div class="row">
+                <!-- Reset Password Section -->
+                <div class="col-md-4 mb-1">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Reset Password</h5>
+                            <!-- Reset password form goes here -->
+                            <section class="mt-4">
+                                <h3 class="fw-bold">Reset Password</h3>
+                                <form method="post" action="{% url 'reset-password' %}">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label">Username</label>
+                                        <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">New Password</label>
+                                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter your new password">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="confirm_password" class="form-label">Confirm New Password</label>
+                                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm your new password">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Reset Password</button>
+                                </form>
+                                <!-- Add this block to display messages -->
+                                <div id="messages-container">
+                                    {% if messages %}
+                                        {% for message in messages %}
+                                            <div class="alert alert-{{ message.tags }}">
+                                                {{ message }}
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
                                 </div>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-
-                </section>
-            </div>
-            <!-- End: Reset Username/Password section -->
-
             
-
+                            </section>
+                            <form method="post">
+                                {% csrf_token %}
+                                <!-- Form fields for resetting password -->
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- Subusers Table Section -->
+                <div class="col-md-6">
+                    <h5 class="mb-3">Subusers</h5>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <!-- Add more columns as needed -->
+                            </tr>
+                        </thead>
+                        <tbody id="subusers-table-body">
+                            {% for subuser in subusers %}
+                            <tr id="subuser-row-{{ subuser.id }}">
+                                <td>{{ subuser.username }}</td>
+                                <td>{{ subuser.email }}</td>
+                                <td>{{ subuser.first_name }}</td>
+                                <td>{{ subuser.last_name }}</td>
+                                <td>
+                                    <form method="post" id="delete-subuser-form-{{ subuser.id }}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="subuser_id" value="{{ subuser.id }}">
+                                        <button type="button" class="btn btn-danger btn-sm delete-subuser-btn" data-subuser-id="{{ subuser.id }}">Deactivate</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </main>
     <!-- end: Main -->
@@ -151,6 +195,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"
         integrity="sha512-sW/w8s4RWTdFFSduOTGtk4isV1+190E/GghVffMA9XczdJ2MDzSzLEubKAs5h0wzgSJOQTRYyaz73L3d6RtJSg=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+
 
 
         <script>
@@ -168,6 +214,30 @@
             window.onload = function() {
                 removeMessages();
             };
+
+
+            $(document).ready(function() {
+                $('.delete-subuser-btn').click(function() {
+                    var subuserId = $(this).data('subuser-id');
+                    var deleteForm = $('#delete-subuser-form-' + subuserId);
+                    $.ajax({
+                        type: 'POST',
+                        url: '{% url "admin_settings" %}',
+                        data: deleteForm.serialize(),
+                        success: function(response) {
+                            if (response.success) {
+                                $('#subuser-row-' + response.subuser_id).remove();
+                                // Optionally, display a success message or perform other actions
+                            } else {
+                                // Optionally, display an error message or perform other actions
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            // Optionally, handle AJAX errors
+                        }
+                    });
+                });
+            });
         </script>
         
 </body>

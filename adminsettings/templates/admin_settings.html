@@ -1,9 +1,8 @@
-<!-- admin_settings.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Add necessary meta tags, title, stylesheets, etc. -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Settings</title>
 </head>
 <body>
@@ -13,6 +12,7 @@
             <tr>
                 <th>Username</th>
                 <th>Email</th>
+                <th>Role</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -21,9 +21,13 @@
             <tr>
                 <td>{{ subuser.username }}</td>
                 <td>{{ subuser.email }}</td>
+                <td>{{ subuser.groups.first }}</td>  <!-- Assuming roles are defined using Django's Group model -->
                 <td>
-                    <a href="{% url 'delete_subuser' subuser.id %}">Delete</a>
-                    <!-- Add edit role option if necessary -->
+                    <form action="{% url 'delete-subuser' subuser.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">Delete</button>
+                    </form>
+                    <!-- Add role editing options here -->
                 </td>
             </tr>
             {% endfor %}

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -138,7 +139,7 @@
             <button type="submit" class="button" name="login" id="login-btn">Sign In</button>
         </form>
 
-        <form id="register-form" action="" method="post" style="display: none;">
+        <form id="register-form" action="{% url 'register' %}" method="post" style="display: none;">
             {% csrf_token %}
 
             <div class="textbox">
