@@ -9,3 +9,4 @@ class Admin(models.Model):
 class SocialMediaData(models.Model):
     # Define your social media data fields
     pass
+

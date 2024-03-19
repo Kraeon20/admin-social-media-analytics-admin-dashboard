@@ -95,13 +95,12 @@
                 </div>
                 <div class="dropdown">
                     <div class="d-flex align-items-center cursor-pointer dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="me-2 d-none d-sm-block">Eastman Johnson</span>
-                        <img class="navbar-profile-image"
-                            src="{% static 'media/admin.png' %}" alt="Image"> <!-- Change the image source accordingly -->
+                        <span class="me-2 d-none d-sm-block">{{ user_first_name }}</span>
+                        <img class="navbar-profile-image" src="{% static 'media/admin.png' %}" alt="Image"> <!-- Change the image source accordingly -->
                     </div>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                         <!-- Other dropdown items -->
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <!-- <li><a class="dropdown-item" href="#">Profile</a></li> -->
                         <li><a class="dropdown-item" href="{% url 'settings' %}">Settings</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li> <!-- Logout link -->

@@ -17,30 +17,32 @@ import google.generativeai as genai
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-
+import re
 
 
 load_dotenv()
 
+# page_id = os.getenv('FACEBOOK_PAGE_ID')
+# access_token = os.getenv('FACEBOOK_ACCESS_TOKEN')
+# gemini_api_key = os.getenv('GEMINI_API_KEY')
 
 page_id = '238443226023972'
-access_token = 'EAAQfAQe5IP0BO97ZBxdqwYzuNlVslAfR6fnQh0DyDp3mSuTArseVAqpC16iojI6dDDv1HZAlMOnEeuOl210NnijogERoYfG484SkhzXeYY0TEKZCFdlLh9atkgu92yRZCVg4cyjmDwaLd8AfC0rx7M152MeTmicZCuGVfbSdyzX1EX7kx8lOzGv1pZCTBmrc2V6MmVZAZAoyb1FRzzAgiZBOvBDPsJjAqokYZD'
-gemini_api_key=genai.configure(api_key='AIzaSyACALRtMI6ZauQYJEP9F4bW0Spbnam55MY')
+access_token = 'EAAQfAQe5IP0BO4pa9D2onibUEIabgTmnSLme7opyAZCSuryYQbQKfRtRoDUt7yaxJRhZBT9dxKl5aBCXJGKcuJpJs8LEQTxRXcLDLe9q5cyjy76wIqFOU2EiAQ8ZCPKWcmuLyWE6ivr8ToaxdlHM3YjqZCgZBucOvvZBlQ91SkJDhZAT1TRZC6xaP84ZCcpy5WzQ6okELLaHvbUSVHRBPBfN9jguGRddBrLEZD'
+gemini_api_key = os.getenv('GEMINI_API_KEY')
+
+
+
+# print(os.getenv('FACEBOOK_PAGE_ID'))
+# print(os.getenv('FACEBOOK_ACCESS_TOKEN'))
+# print(os.getenv('GEMINI_API_KEY'))
+
 
 @csrf_exempt
 @login_required
 def dashboard(request):
-    if request.method == 'POST':
-        user_input = request.POST.get('query')
-        if user_input:
-            # Call a function to process the user input (e.g., send it to Gemini AI)
-            gemini_response = get_gemini_response(user_input)
-            return JsonResponse({'response': gemini_response})
-        else:
-            return JsonResponse({'error': 'No query provided'}, status=400)
-    else:
-        # Handle other types of requests (GET)
-        pass
+    
+    user_first_name = request.user.first_name
+
 
     # total followers accross all platforms
     total_followers = (get_facebook_follower_count(page_id, access_token) +
@@ -85,13 +87,32 @@ def dashboard(request):
     # Sort platforms based on average engagement (descending order)
     platforms.sort(key=lambda x: x['average'], reverse=True)
     
+
+
+    data = {
+        'facebook_followers': facebook_followers,
+        'instagram_followers': instagram_followers,
+        'twitter_followers': twitter_followers,
+        'facebook_likes': facebook_likes,
+        'instagram_likes': instagram_likes,
+        'twitter_likes': twitter_likes,
+        'facebook_comments': facebook_comments,
+        'instagram_comments': instagram_comments,
+        'twitter_comments': twitter_comments,
+        'total_followers': total_followers,
+        'total_likes': total_likes,
+        'total_comments': total_comments,
+        'platforms': platforms,
+    }
+
+
     # Example usage of Gemini AI
     gemini_response = None
     if request.method == 'POST':
         user_input = request.POST.get('query')
         if user_input:
             # Call a function to process the user input (e.g., send it to Gemini AI)
-            gemini_response = get_gemini_response(user_input)
+            gemini_response = get_gemini_response(user_input, data)
             return JsonResponse({'response': gemini_response})
         else:
             return JsonResponse({'error': 'No query provided'}, status=400)
@@ -101,6 +122,7 @@ def dashboard(request):
 
     # Pass total_likes to the template context
     context = {
+        'user_first_name': user_first_name,
         'facebook_followers': facebook_followers,
         'instagram_followers': instagram_followers,
         'twitter_followers': twitter_followers,
@@ -138,8 +160,91 @@ def login_view(request):
 
 
 
+def process_data_query(user_input, data):
+    # Extract relevant data based on the user query
+    response_text = ""
 
-def get_gemini_response(user_input):
+    if "followers" in user_input.lower():
+        response_text += f"Total followers across all platforms: {data['total_followers']}\n"
+        for platform in data['platforms']:
+            response_text += f"{platform['name']} followers: {platform['followers']}\n"
+
+    if "likes" in user_input.lower():
+        response_text += f"Total likes across all platforms: {data['total_likes']}\n"
+        for platform in data['platforms']:
+            response_text += f"{platform['name']} likes: {platform['likes']}\n"
+
+    if "comments" in user_input.lower():
+        response_text += f"Total comments across all platforms: {data['total_comments']}\n"
+        for platform in data['platforms']:
+            response_text += f"{platform['name']} comments: {platform['comments']}\n"
+
+    # More sophisticated logic based on types of queries
+    if "average engagement" in user_input.lower():
+        # Calculate average engagement for each platform
+        for platform in data['platforms']:
+            engagement = (platform['followers'] + platform['likes'] + platform['comments']) / 3
+            response_text += f"Average engagement for {platform['name']}: {engagement}\n"
+
+    if "most engaging platform" in user_input.lower():
+        # Determine the most engaging platform
+        most_engaging_platform = max(data['platforms'], key=lambda x: x['average'])
+        response_text += f"The most engaging platform is {most_engaging_platform['name']} with an average engagement of {most_engaging_platform['average']}\n"
+
+    if "platform with highest followers" in user_input.lower():
+        # Determine the platform with the highest number of followers
+        platform_with_highest_followers = max(data['platforms'], key=lambda x: x['followers'])
+        response_text += f"The platform with the highest number of followers is {platform_with_highest_followers['name']} with {platform_with_highest_followers['followers']} followers\n"
+
+    # Add more sophisticated logic for other types of queries here...
+
+    if not response_text:
+        response_text = "I'm sorry, I couldn't find relevant data for your query."
+
+    return response_text
+
+
+
+
+def get_gemini_response(user_input, data):
+    # Check if the user input is related to data
+    data_related_queries = ["followers", "likes", "comments"]
+    if any(query in user_input.lower() for query in data_related_queries):
+        # Process data-related queries
+        response_text = process_data_query(user_input, data)
+    else:
+        # If the query is not related to data, use Gemini AI for response
+        response_text = generate_gemini_response(user_input)
+    
+    # Format the response with paragraphs and bold text
+    response_text = format_response(response_text)
+    
+    return response_text
+
+def format_response(response_text):
+    # Remove any random characters (including asterisks)
+    response_text = re.sub(r'[^a-zA-Z0-9\s\.,!?]', '', response_text)
+    
+    # Split the response into paragraphs
+    paragraphs = response_text.split("\n\n")
+    
+    # Format each paragraph
+    formatted_paragraphs = []
+    for paragraph in paragraphs:
+        # Remove leading and trailing whitespace
+        paragraph = paragraph.strip()
+        formatted_paragraphs.append(paragraph)
+    
+    # Join paragraphs back together with newlines
+    formatted_response = "\n".join(formatted_paragraphs)
+    
+    return formatted_response
+
+
+
+
+
+def generate_gemini_response(user_input):
     # Your existing code to generate response from Gemini AI
     model = genai.GenerativeModel('gemini-pro')
     response = model.generate_content(user_input)
@@ -147,20 +252,23 @@ def get_gemini_response(user_input):
     return response_text
 
 
-
-
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            # Redirect to login page or any other appropriate page
+            # Save the form but retrieve the user object
+            user = form.save(commit=False)
+            # Assign values to additional fields
+            user.first_name = request.POST.get('first_name')
+            user.last_name = request.POST.get('last_name')
+            user.email = request.POST.get('email')
+            # Save the user object with additional fields
+            user.save()
+            # Redirect to the login page or any other appropriate page
             return redirect('login')
     else:
         form = UserCreationForm()
     return render(request, 'login.html', {'form': form})
-
-
 
 
 

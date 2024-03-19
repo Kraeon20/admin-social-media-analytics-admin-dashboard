@@ -2,12 +2,21 @@ import os
 import requests
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
+from dotenv import load_dotenv
 
 
 
+load_dotenv()
 
-page_id = os.environ.get('FACEBOOK_PAGE_ID')
-access_token = os.environ.get('FACEBOOK_ACCESS_TOKEN')
+page_id = os.getenv('FACEBOOK_PAGE_ID')
+access_token = os.getenv('FACEBOOK_ACCESS_TOKEN')
+gemini_api_key = os.getenv('GEMINI_API_KEY')
+
+
+
+print(os.getenv('FACEBOOK_PAGE_ID'))
+print(os.getenv('FACEBOOK_ACCESS_TOKEN'))
+print(os.getenv('GEMINI_API_KEY'))
 
 
 def get_facebook_total_post_likes(page_id, access_token):

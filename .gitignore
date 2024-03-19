@@ -1,5 +1,3 @@
 ngrok.exe
 main.py
-socialMediaAnalytics/.env
-socialMediaAnalytics/templates/reset_success.html
-socialMediaAnalytics/templates/manage_roles.html
+.env
