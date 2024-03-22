@@ -19,6 +19,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 import re
+from .models import UserRegistration
 
 
 load_dotenv()
@@ -28,7 +29,7 @@ load_dotenv()
 # gemini_api_key = os.getenv('GEMINI_API_KEY')
 
 page_id = '238443226023972'
-access_token = 'EAAQfAQe5IP0BO3LiiK40uYAWKjICwWzs23IpK9AgSgNmfwlqvnylkiO4slsZBOi8zAkMqUDer0EMQGzCZCz9ovZBURdZByJtoFiZCPtZCeW0JyLkZB5TU4DXDwUpOZBQSW5uy6fRhyRLWHT0y6YAyC6w6GkZBMgA8ZAELqyE4CT861D2tvm8EvpPlV8fMmVKc8hDZBQ3SshN7orZBbq5SHrtMOpE0AYElBu0oCMZD'
+access_token = 'EAAQfAQe5IP0BO2XJsZCvyKnTbijcJBZCMNWt3ZCaPswHBFf7ijuMswAnOWeILtZAiCxFF5ny07GPwxipy8mx9sOQXWqbiIf2ZBrjFdsYwpOI9pSqZCTDyhcFLLlYzDtGWhALHRpX8HSOecJKarZAtsV8oxKE4vT2CFnXYvgTHpJl3RA1ZCWDonbOBVNwinDh9daY04R0uFwqhraipQTTFZBYJuC19cWYZAGe8ZD'
 gemini_api_key = os.getenv('GEMINI_API_KEY')
 
 
@@ -258,21 +259,32 @@ def generate_gemini_response(user_input):
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
+        print("Form submitted...")  # Add this print statement
         if form.is_valid():
-            # Save the form but retrieve the user object
+            print("Form is valid...")  # Add this print statement
             user = form.save(commit=False)
-            # Assign values to additional fields
             user.first_name = request.POST.get('first_name')
             user.last_name = request.POST.get('last_name')
             user.email = request.POST.get('email')
-            # Save the user object with additional fields
             user.save()
-            # Redirect to the login page or any other appropriate page
+
+            # Save the user registration information into MongoDB
+            UserRegistration.objects.create(
+                username=user.username,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                email=user.email
+                # Add any other fields you want to save
+            )
+
+            print("User registered successfully...")  # Add this print statement
+
             return redirect('login')
+        else:
+            print("Form is not valid...")  # Add this print statement
     else:
         form = UserCreationForm()
-    return render(request, 'login.html', {'form': form})
-
+    return render(request, 'login.html', {'form': form})  # Updated template name
 
 
 
@@ -294,6 +306,12 @@ def admin_settings(request):
             subuser = User.objects.get(pk=subuser_id)
             subuser.is_active = False
             subuser.save()
+            # Now delete the user from the database
+            subuser.delete()
+            
+            # Also delete the corresponding entry from MongoDB
+            UserRegistration.objects.filter(username=subuser.username).delete()
+            
             messages.success(request, "Subuser deactivated successfully.")
             return JsonResponse({'success': True, 'subuser_id': subuser_id})
         except User.DoesNotExist:
@@ -303,7 +321,6 @@ def admin_settings(request):
     subusers = User.objects.exclude(pk=request.user.pk)
     context = {'subusers': subusers}
     return render(request, 'admin_settings.html', context)
-
 
 def reset_password(request):
     if request.method == 'POST':

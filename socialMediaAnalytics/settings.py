@@ -86,7 +86,7 @@ WSGI_APPLICATION = 'socialMediaAnalytics.wsgi.application'
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'djongo',
-#         'NAME': 'socialMediaAnalytics',
+#         'NAME': 'mediaAnalytics',
 #     }
 # }
 

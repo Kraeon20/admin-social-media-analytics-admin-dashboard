@@ -11,5 +11,4 @@ urlpatterns = [
     path('admin_settings/', views.admin_settings, name='admin_settings'),
     path('reset-password/', reset_password, name='reset-password'),
     path('logout/', views.logout_view, name='logout'),
-
 ]

@@ -94,7 +94,7 @@
                     </div>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                         <!-- Other dropdown items -->
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <!-- <li><a class="dropdown-item" href="#">Profile</a></li> -->
                         <li><a class="dropdown-item" href="{% url 'settings' %}">Settings</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li> <!-- Logout link -->
@@ -160,8 +160,8 @@
                                 <th>Username</th>
                                 <th>Email</th>
                                 <th>First Name</th>
-                                <th>Last Name</th>
-                                <!-- Add more columns as needed -->
+                                <!-- <th>Last Name</th> -->
+                                <th>Action</th> <!-- Added Action column -->
                             </tr>
                         </thead>
                         <tbody id="subusers-table-body">
@@ -170,12 +170,12 @@
                                 <td>{{ subuser.username }}</td>
                                 <td>{{ subuser.email }}</td>
                                 <td>{{ subuser.first_name }}</td>
-                                <td>{{ subuser.last_name }}</td>
+                                <!-- <td>{{ subuser.last_name }}</td> -->
                                 <td>
                                     <form method="post" id="delete-subuser-form-{{ subuser.id }}">
                                         {% csrf_token %}
                                         <input type="hidden" name="subuser_id" value="{{ subuser.id }}">
-                                        <button type="button" class="btn btn-danger btn-sm delete-subuser-btn" data-subuser-id="{{ subuser.id }}">Deactivate</button>
+                                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
                                     </form>
                                 </td>
                             </tr>
@@ -218,6 +218,7 @@
 
             $(document).ready(function() {
                 $('.delete-subuser-btn').click(function() {
+                    console.log("Delete button clicked."); // Add this line
                     var subuserId = $(this).data('subuser-id');
                     var deleteForm = $('#delete-subuser-form-' + subuserId);
                     $.ajax({
@@ -233,11 +234,12 @@
                             }
                         },
                         error: function(xhr, status, error) {
-                            // Optionally, handle AJAX errors
+                            console.error(error); // Log any AJAX errors to the console
                         }
                     });
                 });
             });
+
         </script>
         
 </body>
