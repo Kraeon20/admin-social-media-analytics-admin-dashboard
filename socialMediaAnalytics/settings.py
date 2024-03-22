@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'allauth',
     'allauth.account',
-    'allauth.socialaccount',
+    # 'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
     'socialMediaAnalytics',
     'adminpanel',
@@ -83,10 +83,21 @@ WSGI_APPLICATION = 'socialMediaAnalytics.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'djongo',
+#         'NAME': 'socialMediaAnalytics',
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'socialMediaAnalytics',
+        'NAME': 'mediaAnalytics',
+        'CLIENT': {
+            'host': 'mongodb://localhost:27017/',
+            'authSource': 'admin',
+        }
     }
 }
 

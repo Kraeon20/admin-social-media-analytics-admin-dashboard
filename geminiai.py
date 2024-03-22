@@ -20,13 +20,12 @@ def get_gemini_response(userr):
 
     response = model.generate_content(userr)
     response_text = response.text
-    userrr = input("Say something...\n")
 
     return response_text
 
 
 
 
-reply = get_gemini_response(user_input)
+reply = get_gemini_response('hi')
 
 print(reply)

@@ -5,8 +5,3 @@ class Admin(models.Model):
     username = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
     # Add more fields as needed
-
-class SocialMediaData(models.Model):
-    # Define your social media data fields
-    pass
-

@@ -28,10 +28,11 @@ load_dotenv()
 # gemini_api_key = os.getenv('GEMINI_API_KEY')
 
 page_id = '238443226023972'
-access_token = 'EAAQfAQe5IP0BOyu4eOtxFZAHJYZAIzyVZAaixoXLGRviegj84PZBQgmDuCDX8YN8gZAx3ZBQmwNot3DCxRFJEgSfvt0qOczdAqoLr4D320d05LWJNZCjhGpXxsoSMgm008oNhGID92rsbHZC1ziSTL7eRuJRhXZAiD36K9t2CltbHMJnyoZCbc9OImCqhrW9sYTK6nqGXlsX4slgyGWwmlCcEdKC6ZArj6CRbsZD'
+access_token = 'EAAQfAQe5IP0BO3LiiK40uYAWKjICwWzs23IpK9AgSgNmfwlqvnylkiO4slsZBOi8zAkMqUDer0EMQGzCZCz9ovZBURdZByJtoFiZCPtZCeW0JyLkZB5TU4DXDwUpOZBQSW5uy6fRhyRLWHT0y6YAyC6w6GkZBMgA8ZAELqyE4CT861D2tvm8EvpPlV8fMmVKc8hDZBQ3SshN7orZBbq5SHrtMOpE0AYElBu0oCMZD'
 gemini_api_key = os.getenv('GEMINI_API_KEY')
 
 
+genai.configure(api_key=gemini_api_key)
 
 # print(os.getenv('FACEBOOK_PAGE_ID'))
 # print(os.getenv('FACEBOOK_ACCESS_TOKEN'))

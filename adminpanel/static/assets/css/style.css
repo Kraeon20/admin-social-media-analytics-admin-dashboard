@@ -339,8 +339,8 @@ nav {
 /* Chat bot container */
 .chat-bot-container {
     position: fixed;
-    bottom: 50px;
-    right: 20px;
+    bottom: 10%;
+    left: 90%;
 }
 
 /* Chat bot icon */
@@ -365,9 +365,9 @@ nav {
 /* Chat bot panel */
 .chat-bot-panel {
     position: fixed;
-    bottom: 12%;  /* Set to 0 for fixed bottom position */
-    right: 20px;
-    width: 450px;
+    bottom: 15%;  /* Set to 0 for fixed bottom position */
+    right: 10%;
+    width: 26%;
     height: 0; /* Initially hidden */
     overflow-y: auto;
     background-color: #fff;
@@ -378,7 +378,7 @@ nav {
 }
 
 .chat-bot-panel.active {
-    height: 600px; /* Expanded height */
+    height: 70%; /* Expanded height */
     border-color: #0056b3; /* Show border color when active */
 }
 

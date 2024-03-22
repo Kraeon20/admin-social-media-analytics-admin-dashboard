@@ -8,8 +8,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-page_id = os.getenv('FACEBOOK_PAGE_ID')
-access_token = os.getenv('FACEBOOK_ACCESS_TOKEN')
+# page_id = os.getenv('FACEBOOK_PAGE_ID')
+# access_token = os.getenv('FACEBOOK_ACCESS_TOKEN')
+# gemini_api_key = os.getenv('GEMINI_API_KEY')
+
+
+page_id = '238443226023972'
+access_token = 'EAAQfAQe5IP0BO4PhZAn4oJXzWM3txqCJhMzWUNys9wwoeB6oDboUGbD6bzpyPqMclXnjDQnCCD9P9oA6UlJxhwFUTqLfGYoNZA58ZB8rRHCcHmhZCtXaqOvZBKeXZBJ0iaPKMRxU5C8SwcKVM9ivjBSztuZBFg9IEbZBXBzd76JG0FOSwBvjRniQwziaVhphajuMVME4ZBixcYvDqiJZBr5RdgMacEZBRfNK24ZD'
 gemini_api_key = os.getenv('GEMINI_API_KEY')
 
 
